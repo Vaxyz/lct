@@ -1,0 +1,12 @@
+import { Link, useParams } from 'react-router-dom'
+import { BookOpen, Heart, NotebookPen } from 'lucide-react'
+import { useGetDevotionalQuery } from '../../features/devotionals/devotionalsApi'
+
+export function DevotionalDetailPage(){
+  const {slug=''}=useParams()
+  const result=useGetDevotionalQuery(slug)
+  if(result.isLoading)return <main className="mx-auto max-w-3xl px-4 py-12 text-slate-500">Loading devotional…</main>
+  if(result.isError||!result.data?.data)return <main className="mx-auto max-w-3xl px-4 py-12"><h1 className="text-2xl font-bold">Devotional not found</h1><p className="mt-2 text-slate-600">This devotional may not be published yet.</p><Link to="/devotionals" className="mt-4 inline-block font-semibold text-purple-800">← Browse devotionals</Link></main>
+  const d=result.data.data
+  return <main className="mx-auto max-w-3xl px-4 py-10 sm:px-6"><Link to="/devotionals" className="text-sm font-semibold text-purple-800">← All devotionals</Link><article className="mt-5 rounded-3xl border border-slate-200 bg-white p-6 shadow-sm sm:p-10"><span className="rounded-full bg-purple-50 px-3 py-1 text-xs font-bold text-purple-800">{d.theme||'Daily devotional'}</span><h1 className="mt-5 text-3xl font-bold tracking-tight text-slate-950 sm:text-4xl">{d.title}</h1><p className="mt-4 flex items-center gap-2 font-semibold text-amber-800"><BookOpen size={18}/>{d.scriptureReference}</p>{d.scriptureText&&<blockquote className="mt-5 rounded-r-xl border-l-4 border-amber-400 bg-amber-50 p-5 text-lg italic leading-8 text-slate-800">{d.scriptureText}</blockquote>}<section className="mt-8"><h2 className="text-xl font-bold">Reflection</h2><p className="mt-3 whitespace-pre-wrap leading-8 text-slate-700">{d.reflection}</p></section>{d.practicalApplication&&<section className="mt-7 rounded-2xl bg-purple-50 p-5"><h2 className="font-bold text-purple-950">Put it into practice</h2><p className="mt-2 whitespace-pre-wrap leading-7 text-slate-700">{d.practicalApplication}</p></section>}{d.prayer&&<section className="mt-7"><h2 className="flex items-center gap-2 text-xl font-bold"><Heart size={19} className="text-rose-600"/>Prayer</h2><p className="mt-3 whitespace-pre-wrap leading-8 text-slate-700">{d.prayer}</p></section>}<Link to="/devotionals/journal" className="mt-8 inline-flex items-center gap-2 rounded-xl bg-purple-800 px-5 py-3 font-semibold text-white"><NotebookPen size={17}/> Reflect in my journal</Link></article></main>
+}
